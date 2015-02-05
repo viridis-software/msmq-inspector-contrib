@@ -1,0 +1,1 @@
+msbuild MSMQ.Example.Deserialiser.PlugIn\MSMQ.Example.Deserialiser.PlugIn.sln

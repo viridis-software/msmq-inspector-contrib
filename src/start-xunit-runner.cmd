@@ -1,0 +1,1 @@
+MSMQ.Example.Deserialiser.PlugIn\packages\xunit.runners.1.9.2\tools\xunit.gui.clr4.x86.exe MSMQ.Example.Deserialiser.PlugIn.Tests\bin\Debug\MSMQ.Example.Deserialiser.PlugIn.Tests.dll

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- use packages\xunit.runners.1.9.2\tools\xunit.gui.clr4.x86.exe -->
+<xunit>
+  <assemblies>
+    <assembly filename="bin\Debug\MSMQ.Example.Deserialiser.PlugIn.Tests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>
