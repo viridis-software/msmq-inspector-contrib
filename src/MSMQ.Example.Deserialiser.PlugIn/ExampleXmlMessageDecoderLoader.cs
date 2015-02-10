@@ -1,4 +1,12 @@
-﻿using System;
+﻿#region License
+
+// Copyright 2015 VIRIDIS SOFTWARE PTY LTD (http://viridissoftware.com.au/Products/MsmqInspector/). All rights reserved.
+// See: http://viridissoftware.com.au/Products/MsmqManager/License
+// See: https://github.com/viridis-software/msmq-inspector-contrib
+
+#endregion
+
+using System;
 using MsmqInspector.GUI.Core;
 using MsmqInspector.GUI.Core.Formatting;
 

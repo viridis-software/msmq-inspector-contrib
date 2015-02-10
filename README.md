@@ -23,4 +23,14 @@ See the code comments for more detail.
 - The `ExampleXmlMessageDecoder` does the work
 - The `ExampleXmlMessageDecoderTests` just inject an XML stream as an example
 
+Installing a Plugin
+-------------------
+
+The application will search for plugins (*.plugin.dll) in:
+
+- The current program folder (e.g. `C:\Program Files (x86)\MSMQ Inspector` or the development folder)
+- The common data path in the directory `C:\ProgramData\MSMQInspector`
+- The local data path in the rirectory `C:\Users\(*username*)\AppData\Local\MSMQInspector`
+
+A binding redirect is used to ensure that plugins build against an older assembly still load on newer versions.
 
