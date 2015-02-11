@@ -41,21 +41,21 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ViridisSoftware.MsmqInspector.GUI.Core, Version=1.2.0.77, Culture=neutral, PublicKeyToken=f7cf25f2bbd7c29e, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\MSMQ Inspector\ViridisSoftware.MsmqInspector.GUI.Core.dll</HintPath>
-    </Reference>
     <Reference Include="xunit">
       <HintPath>..\MSMQ.Example.Deserialiser.PlugIn\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="ViridisSoftware.MsmqInspector.GUI.Core">
+      <HintPath>C:\Program Files %28x86%29\MSMQ Inspector\ViridisSoftware.MsmqInspector.GUI.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExampleXmlMessageDecoderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExampleBinaryMessageDecoderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MSMQ.Example.Deserialiser.PlugIn\MSMQ.Example.Deserialiser.PlugIn.csproj">
-      <Project>{fc41994b-7737-4cbe-a5d7-73b491b8fa49}</Project>
+      <Project>{FC41994B-7737-4CBE-A5D7-73B491B8FA49}</Project>
       <Name>MSMQ.Example.Deserialiser.PlugIn</Name>
     </ProjectReference>
   </ItemGroup>

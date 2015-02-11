@@ -33,7 +33,7 @@ namespace MSMQ.Example.Deserialiser.PlugIn
     {
         public ExampleXmlMessageDecoderLoader()
             : base(
-                "Example XML Message Decoder Plugin",
+                "Example Message Decoder Plugin",
                 "Example",
                 500)
         {
@@ -47,8 +47,9 @@ namespace MSMQ.Example.Deserialiser.PlugIn
             // Get an instance of the IMessageDecoderFactory:
             var messageDecoderFactory = MsmqInspector.GUI.Core.ApplicationServices.Instance.Resolve<IMessageDecoderFactory>();
 
-            // Register the custom decoder - the name "xml2" will show up in the deserialiser dropdown when viewing a message:
-            messageDecoderFactory.Register("xml2", typeof (ExampleXmlMessageDecoder));
+            // Register the custom decoder - the name "example-xml" will show up in the deserialiser dropdown when viewing a message:
+            messageDecoderFactory.Register("example-xml", typeof (ExampleXmlMessageDecoder), "XML");
+            messageDecoderFactory.Register("example-binary", typeof (ExampleBinaryMessageDecoder));
         }
     }
 }
