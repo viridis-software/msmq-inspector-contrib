@@ -34,3 +34,8 @@ The application will search for plugins (*.plugin.dll) in:
 
 A binding redirect is used to ensure that plugins build against an older assembly still load on newer versions.
 
+Help!
+-----
+
+If you have a particular scenario you would like to implement please [Contact Us](http://viridissoftware.com.au/Home/Contact) with some details. 
+There may be existing pieces you can plug together or a simple kick-start on where to look.
