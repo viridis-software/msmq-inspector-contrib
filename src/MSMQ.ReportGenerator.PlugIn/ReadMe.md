@@ -101,12 +101,12 @@ A bare bones loader could look like this:
 When the application loads a plug in, a call to `LoadPlugIn(IApplicationServices services)` is made and the services are passed in. 
 The `IApplicationServices` interface is an application shell related item. 
 It has pointers to other core parts of the application such as the "Host Window" (`IHostWindow`).
-When setting up a plugin most of the interactions will be with either the ***application services*** to register commands and services, or with the ***host window*** to add menu items for example.
+When setting up a plug in most of the interactions will be with either the ***application services*** to register commands and services, or with the ***host window*** to add menu items for example.
 
 To check that the plug in loader is working as expected lets add a call to `IHostWindow.DisplayMessageBox`.
 This is a wrapper call to MessageBox.Show so nothing too exciting but will show us that things are working.
 
-Modufy the `InitializePlugIn` method and build:
+Modify the `InitializePlugIn` method and build:
 
     public override void InitializePlugIn()
     {
@@ -122,10 +122,109 @@ Modufy the `InitializePlugIn` method and build:
             null);
     }
 
-To run the application go to the build folder, e.g. "src\MSMQ.ReportGenerator.PlugIn\bin\Debug" and if the pre-build events are setup you should have a copy of *MSMQ Inspector* in the folder. 
+To run the application go to the build folder, e.g. "src\MSMQ.ReportGenerator.PlugIn\bin\Debug" and if the pre-build events are set-up you should have a copy of *MSMQ Inspector* in the folder. 
 Simply run the application and you should see the message bos show up.
 
 ![The message box displayed while initializing](My-plugin-message-box.png)
 
-If you can't see the message box make sure that you are running the Premium edition of the software (required to run external plugins) and that the Option for "loadExternalPlugins" is set to true.
+If you can't see the message box make sure that you are running the Premium edition of the software (required to run external plug-ins) and that the Option for "loadExternalPlugins" is set to true.
+
+Get rid of that code for now, lets add something interesting.
+
+## Adding a Command
+
+Next we will create a command to start the report and then we will flesh it out with the code to create a report.
+We need to:
+
+* Get the current Server information
+* Get the current Queue information
+* Get (peek) the messages on the queue
+
+Once we have this information we can render some sort of report.
+
+To give you an idea of what a command looks like, lets take a look at a simple one, here is a trimmed version of the command that :
+
+	// cut down version of the "Copy Queue Path" command	
+    public class QueueInspector : AppCommandBase
+    {
+        public CopyQueuePathCommand()
+            : base("Copy Queue Path")
+        {
+        }
+
+        public override void Execute()
+        {
+            Clipboard.SetText(HostWindow.QueueInspector.RightClickedQueueName);
+        }
+    }
+
+Not too much rocket science going on in there, you can probably guess what is going on without a word from me. The `QueueInspector` is a code based reference via the shell to the "Queue Inspector" you see in the application.
+
+How is this wired up?
+Inside the `loader.InitializePlugIn()` method for this plugin there is some code to add a menu item to the context menu for the queue inspector (yes, the application uses the same system to load its internal workings).
+
+	...
+	Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
+		CommandControlBuilder.CreateToolStripMenuItem<CopyQueuePathCommand>());
+	...
+
+This displays a menu item that when clicked, executes the code above.
+
+Lets make use of this as a bit of a template for the report generator. Create a class called `GenerateQueueMessageReportCommand` and inherite from `AppCommandBase` (it just covers the basic command information). 
+
+I am going to display the "FormatName" of the queue that is selected in the "Queue Inspector". 
+Normally it is best to check that this is not null etc but I am keeping the code simple for now. 
+
+The snippet `HostWindow.QueueInspector.MessageQueueContext.FormatName` will get the "Format Name" of the queue (e.g. "DIRECT=OS:devbox\private$\actions"). 
+I find this the modt reliable way of getting a queue connection.
+
+    public class GenerateQueueMessageReportCommand : AppCommandBase
+    {
+        public GenerateQueueMessageReportCommand()
+            : base("Generate Queue Message Report")
+        {
+        }
+
+        public override void Execute()
+        {
+            var formatName = HostWindow.QueueInspector.MessageQueueContext.FormatName;
+
+            Services.HostWindow.DisplayMessageBox(
+                null /* not relevenat */,
+                formatName /* message text */,
+                "queue report command" /* caption */,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1,
+                MessageBoxOptions.DefaultDesktopOnly,
+                null,
+                null);
+        }
+    }
+
+> Note that I had to add a reference to **System.Drawing** for this to build.
+
+Next, we need to wire up the command to a button or menu item somewhere. 
+Let's put it on the command on the Queue Context Menu (Services.HostWindow.QueueInspector.QueueMenu). 
+We simply access the Items directly and add a tool strip item - use the helper `CommandControlBuilder.CreateToolStripMenuItem<T>` as it wires things up for you).
+
+The `InitializePlugIn` method looks like this:
+
+    public override void InitializePlugIn()
+    {
+        Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
+            CommandControlBuilder.CreateToolStripMenuItem<GenerateQueueMessageReportCommand>());
+    }
+
+Next build the plug-in and run the executable (MSMQInspector.exe).
+Expand a server node and right click on a queue - in my case it is "audit" - you will see the new menu option: 
+
+![The new "Generate Queue Message Report" menu item at the bottom](New-context-menu-item.png)
+
+Execute the command by clicking on it, you will see the message box show up with the server name and queue name as expected: 
+
+![The debug message with queue information](msg-box-queue-report-command.png)
+
+Now we have a custom command integrated into *MSMQ Inspector* and the context menu by queue name. 
+Next we will need to flesh out the report side of it - we will need to access the messages on the queue.
 

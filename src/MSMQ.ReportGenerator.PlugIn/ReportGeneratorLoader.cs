@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using MsmqInspector.GUI.Core;
 
 namespace MSMQ.ReportGenerator.PlugIn
@@ -13,16 +12,8 @@ namespace MSMQ.ReportGenerator.PlugIn
 
         public override void InitializePlugIn()
         {
-            Services.HostWindow.DisplayMessageBox(
-                null /* not relevenat */, 
-                "my plugin" /* message text */, 
-                "test" /* caption */, 
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information, 
-                MessageBoxDefaultButton.Button1,
-                MessageBoxOptions.DefaultDesktopOnly, 
-                null, 
-                null);
+            Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
+                CommandControlBuilder.CreateToolStripMenuItem<GenerateQueueMessageReportCommand>());
         }
     }
 }
