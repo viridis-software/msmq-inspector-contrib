@@ -1,4 +1,4 @@
-Creating the Plug In
+# Creating the Plug In
 
 This is the documentation of step by step how to create a plug in for MSMQ Inspector that will iterate a queue and produce a report of all the messages in it. 
 
@@ -56,7 +56,7 @@ If I build the project now I get output similar to:
 The application will look for DLL's that contain "loaders". 
 These are classes that implement `MsmqInspector.GUI.Core.IPlugIn` interface and this is where you hook into the system and add menu items, register commands etc.
 
-The interface looks like this but ther is a base class (`PluginLoaderBase`) for the boiler plate code:
+The interface looks like this but there is a base class (`PluginLoaderBase`) for the boiler plate code:
 
 	namespace MsmqInspector.GUI.Core
 	{
@@ -111,7 +111,7 @@ Modify the `InitializePlugIn` method and build:
     public override void InitializePlugIn()
     {
         Services.HostWindow.DisplayMessageBox(
-            null /* not relevenat */, 
+            null /* not relevant */, 
             "my plugin" /* message text */, 
             "test" /* caption */, 
             MessageBoxButtons.OK,
@@ -161,7 +161,7 @@ To give you an idea of what a command looks like, lets take a look at a simple o
 Not too much rocket science going on in there, you can probably guess what is going on without a word from me. The `QueueInspector` is a code based reference via the shell to the "Queue Inspector" you see in the application.
 
 How is this wired up?
-Inside the `loader.InitializePlugIn()` method for this plugin there is some code to add a menu item to the context menu for the queue inspector (yes, the application uses the same system to load its internal workings).
+Inside the `loader.InitializePlugIn()` method for this plug-in there is some code to add a menu item to the context menu for the queue inspector (yes, the application uses the same system to load its internal workings).
 
 	...
 	Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
@@ -176,7 +176,7 @@ I am going to display the "FormatName" of the queue that is selected in the "Que
 Normally it is best to check that this is not null etc but I am keeping the code simple for now. 
 
 The snippet `HostWindow.QueueInspector.MessageQueueContext.FormatName` will get the "Format Name" of the queue (e.g. "DIRECT=OS:devbox\private$\actions"). 
-I find this the modt reliable way of getting a queue connection.
+I find this the most reliable way of getting a queue connection.
 
     public class GenerateQueueMessageReportCommand : AppCommandBase
     {
@@ -190,7 +190,7 @@ I find this the modt reliable way of getting a queue connection.
             var formatName = HostWindow.QueueInspector.MessageQueueContext.FormatName;
 
             Services.HostWindow.DisplayMessageBox(
-                null /* not relevenat */,
+                null /* not relevant */,
                 formatName /* message text */,
                 "queue report command" /* caption */,
                 MessageBoxButtons.OK,
@@ -227,4 +227,66 @@ Execute the command by clicking on it, you will see the message box show up with
 
 Now we have a custom command integrated into *MSMQ Inspector* and the context menu by queue name. 
 Next we will need to flesh out the report side of it - we will need to access the messages on the queue.
+
+## Accessing Message Data
+
+This is still pretty basic stuff but we have been accessing the queue information with wrappers that simplify the task.
+Next is another helpful command that does most of the work for us: `MsmqListCommand`.
+Here is an example of how to use it:
+
+    public override void Execute()
+    {
+        // Get the "Format Name":
+        var formatName = HostWindow.QueueInspector.MessageQueueContext.FormatName;
+
+        // Get an instance of "IMsmqQueueManager" for better access to the queues:
+        var msmqQueueManager = Services.Resolve<IMsmqQueueManager>();
+
+        // Set the path to the format name of the selected queue:
+        msmqQueueManager.QueuePath = formatName;
+
+        // Create an MSMQ List Command - a wrapper that peaks the message data on the queue:
+        var listCommand = new MsmqListCommand();
+
+        // By default the body of the message is not loaded, set "DisplayBody" to true and 
+        // this will be retrieved with the message:
+        listCommand.DisplayBody = true;
+
+        // Execute the list command, this *will* enumerate the messages in the queue:
+        listCommand.Execute(msmqQueueManager);
+
+        // For now lets just report the Count:
+        Services.HostWindow.DisplayMessageBox(
+            null /* not relevant */,
+            listCommand.Result.Count.ToString() /* message text */,
+            "queue report command" /* caption */,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information,
+            MessageBoxDefaultButton.Button1,
+            MessageBoxOptions.DefaultDesktopOnly,
+            null,
+            null);
+    }
+
+Lets walk though this:
+
+* Get the "Format Name" as before using `HostWindow.QueueInspector.MessageQueueContext.FormatName`
+
+* Get an instance of `IMsmqQueueManager` for better access to the queues - this is basically a helper that manages a connection to an MSMQ
+
+* Set the path to the format name of the selected queue
+
+* Create an MSMQ List Command - this again is a wrapper that "peaks" the message data on the queue we specify
+
+* Next we set the list commands "DisplayBody" property to true to get the contents of the messages - by default the body of the message is not loaded to keep the command execution fast
+
+* Execute the list command and yes, this *will* enumerate the messages in the queue
+
+For now I am just displaying the `Count` of the list command.
+Lets build and run to make sure all is well.
+Now if you run the report command you will see a message box with the total.
+
+Next, lets get some message data.
+
+> I am assuming you have at least one message in the queue here, if not create one using the "Create New Message" command - even a simple JSON payload will do, e.g. `{ test: true }`
 
