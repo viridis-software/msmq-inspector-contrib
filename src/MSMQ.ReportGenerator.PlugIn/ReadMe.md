@@ -290,3 +290,89 @@ Next, lets get some message data.
 
 > I am assuming you have at least one message in the queue here, if not create one using the "Create New Message" command - even a simple JSON payload will do, e.g. `{ test: true }`
 
+Make the following modification:
+
+
+
+    // Grab the first message - render the contents
+    var message = listCommand.Result.First();
+    message.Formatter = new TextMessageFormatter();
+    var msg = message.Body.ToString();
+
+    // For now lets just report the Count:
+    Services.HostWindow.DisplayMessageBox(
+        null /* not relevant */,
+        msg /* message text */,
+        "queue report command" /* caption */,
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information,
+        MessageBoxDefaultButton.Button1,
+        MessageBoxOptions.DefaultDesktopOnly,
+        null,
+        null);
+
+This is about getting the first message in the result and rendering it using the built in "Text Message Foramtter".
+If your message has a simple ASCII/JSON/XML in the body you will probably see a decent view of it.
+
+Lets make this a bit smarter. 
+
+MSMQ Inspector has a concept of a "prefered deserialiser" - you can access this setting for the current queue with this code: `Services.HostWindow.QueueInspector.GetPreferredDeserialiserForQueue(name)` - for example:
+
+    // Use the "Name" of the queue to lookup the preferred deserialiser (if any), the default
+    // is "guess" (note that the format of the key used to lookup the Preferred Deserialiser
+    // is "<machine>\<queue-name>", e.g. "server\private$\orders".
+    var preferredDeserialiser = Services.HostWindow.QueueInspector.GetPreferredDeserialiserForQueue(
+        HostWindow.QueueInspector.MessageQueueContext.Name);
+
+So what we get here is "xml", or "wcf" or at least "guess".
+This value can then be used to pass to `IMessageBodyRenderService.Render(byte[] bytes, string deserialiser, Dictionary<string, string> deserialiserValues)` - this will take care of transforming the `bytes` we pass in according to the `deserialiser` we specify. 
+The last parameter is about passing around extra settings in a generic manner, we can use null here.
+
+How does this all look?
+
+    // Use the "Name" of the queue to lookup the preferred deserialiser (if any), the default
+    // is "guess" (note that the format of the key used to lookup the Preferred Deserialiser
+    // is "<machine>\<queue-name>", e.g. "server\private$\orders".
+    var preferredDeserialiser = Services.HostWindow.QueueInspector.GetPreferredDeserialiserForQueue(
+        HostWindow.QueueInspector.MessageQueueContext.Name);
+
+    // Grab the first message - render the contents
+    var message = listCommand.Result.First();
+
+    // Get an instance of the rendering service:
+    var messageBodyRenderService = Services.Resolve<IMessageBodyRenderService>();
+
+    // We need the message data in byte format, convert the stream to bytes:
+    byte[] bytes;
+    using (var sr = new StreamReader(message.BodyStream, true))
+    {
+        var length = (int)sr.BaseStream.Length;
+        bytes = new byte[length];
+        sr.BaseStream.Read(bytes, 0, length);
+    }
+	
+	// Use the Render Service to change the message bytes into a string:
+    var msg = messageBodyRenderService.Render(bytes, preferredDeserialiser, null);
+
+    // For now lets just report the Count:
+    Services.HostWindow.DisplayMessageBox(
+        null /* not relevant */,
+        msg /* message text */,
+        "queue report command" /* caption */,
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information,
+        MessageBoxDefaultButton.Button1,
+        MessageBoxOptions.DefaultDesktopOnly,
+        null,
+        null);
+
+Here is an example where using a Queue that has WCF messages on it:
+
+![Render MSMQ Message Body](render-msmq-messsage-body.png)
+
+One thing to note is that the redering service will also take notice of the "Show WCF Envelope" setting.
+If you have a WCF message try executing the report with the setting on and off.
+
+From here we are only a few lines of code away from rendering every message in the queue.
+
+ 
