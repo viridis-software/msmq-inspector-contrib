@@ -493,3 +493,17 @@ Here is an example of the output:
 Obviously there is a lot we can do to this command to make it more readable, fault tolerant etc but for the purposes of this tutorial we will just keep it in one method.
 
 A few notes about distributing this plug-in...
+
+
+## Deployment
+
+The application will search for plug-ins (a DLL ending with ".plugin.dll") in to following order:
+
+- The current program folder (e.g. `C:\Program Files (x86)\MSMQ Inspector` or the development folder)
+- The common data path in the directory `C:\ProgramData\MSMQInspector`
+- The local data path in the directory `C:\Users\(*username*)\AppData\Local\MSMQInspector`
+
+A binding redirect is used to ensure that plug-ins build against an older assembly still load on newer versions.
+
+I you wanted to distribute this to your team for example, make the resulting DLL available for download and place a copy in the "C:\ProgramData\MSMQInspector" folder (if not present simply create one).
+

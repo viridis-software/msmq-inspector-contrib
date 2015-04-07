@@ -4,9 +4,11 @@ Example code for extending the behaviour of MSMQ Inspector.
 
 We do make the bold assumption that you have a copy of the software installed (version of at least 1.2.0.77) - see [http://viridissoftware.com.au/Products/MSMQManager/](http://viridissoftware.com.au/Products/MSMQManager/) and have MSMQ configured on the development machine.
 
-Plugin use is restricted to the Premium licensed users for now.
+Plugin use is restricted to the Premium licensed users.
 
-The current example is a plugin that adds a custom message deserialiser (or message decoder).
+> For a more complete tutorial - see [MSMQ.ReportGenerator.PlugIn Read Me](src/MSMQ.ReportGenerator.PlugIn/ReadMe.md)
+
+The current example is a plug-in that adds a custom message deserialiser (or message decoder).
 
 Key things to keep in mind:
 
@@ -23,16 +25,16 @@ See the code comments for more detail.
 - The `ExampleXmlMessageDecoder` does the work
 - The `ExampleXmlMessageDecoderTests` just inject an XML stream as an example
 
-Installing a Plugin
--------------------
+Installing a Plug-in
+--------------------
 
-The application will search for plugins (*.plugin.dll) in:
+The application will search for plug-ins (*.plug-in.dll) in:
 
 - The current program folder (e.g. `C:\Program Files (x86)\MSMQ Inspector` or the development folder)
 - The common data path in the directory `C:\ProgramData\MSMQInspector`
-- The local data path in the rirectory `C:\Users\(*username*)\AppData\Local\MSMQInspector`
+- The local data path in the directory `C:\Users\(*username*)\AppData\Local\MSMQInspector`
 
-A binding redirect is used to ensure that plugins build against an older assembly still load on newer versions.
+A binding redirect is used to ensure that plug-ins build against an older assembly still load on newer versions.
 
 Help!
 -----
