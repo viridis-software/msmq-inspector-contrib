@@ -34,22 +34,22 @@ The reason for this is so that you can simply go to you `bin\Degug` folder and r
 
 If I build the project now I get output similar to:
 
-	1>------ Build started: Project: MSMQ.ReportGenerator.PlugIn, Configuration: Debug Any CPU ------
-	1>  C:\Program Files (x86)\MSMQ Inspector\App.ico
-	1>  C:\Program Files (x86)\MSMQ Inspector\ChangeLog.txt
-	1>  C:\Program Files (x86)\MSMQ Inspector\License-Icons.txt
-	1>  C:\Program Files (x86)\MSMQ Inspector\License-ICSharpCode.TextEditor.txt
-	1>  C:\Program Files (x86)\MSMQ Inspector\License-MSMQInspector.txt
-	1>  C:\Program Files (x86)\MSMQ Inspector\License-WeifenLuo.WinFormsUI.Docking.txt
-	1>  C:\Program Files (x86)\MSMQ Inspector\MSMQInspector.exe
-	1>  C:\Program Files (x86)\MSMQ Inspector\MSMQInspector.exe.config
-	1>  C:\Program Files (x86)\MSMQ Inspector\ReadMe.htm
-	1>  C:\Program Files (x86)\MSMQ Inspector\unins000.dat
-	1>  C:\Program Files (x86)\MSMQ Inspector\unins000.exe
-	1>  C:\Program Files (x86)\MSMQ Inspector\ViridisSoftware.MsmqInspector.GUI.Core.dll
-	1>         12 file(s) copied.
-	1>  MSMQ.ReportGenerator.PlugIn -> msmq-inspector-contrib\src\MSMQ.ReportGenerator.PlugIn\bin\Debug\MSMQ.ReportGenerator.PlugIn.dll
-	========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
+    1>------ Build started: Project: MSMQ.ReportGenerator.PlugIn, Configuration: Debug Any CPU ------
+    1>  C:\Program Files (x86)\MSMQ Inspector\App.ico
+    1>  C:\Program Files (x86)\MSMQ Inspector\ChangeLog.txt
+    1>  C:\Program Files (x86)\MSMQ Inspector\License-Icons.txt
+    1>  C:\Program Files (x86)\MSMQ Inspector\License-ICSharpCode.TextEditor.txt
+    1>  C:\Program Files (x86)\MSMQ Inspector\License-MSMQInspector.txt
+    1>  C:\Program Files (x86)\MSMQ Inspector\License-WeifenLuo.WinFormsUI.Docking.txt
+    1>  C:\Program Files (x86)\MSMQ Inspector\MSMQInspector.exe
+    1>  C:\Program Files (x86)\MSMQ Inspector\MSMQInspector.exe.config
+    1>  C:\Program Files (x86)\MSMQ Inspector\ReadMe.htm
+    1>  C:\Program Files (x86)\MSMQ Inspector\unins000.dat
+    1>  C:\Program Files (x86)\MSMQ Inspector\unins000.exe
+    1>  C:\Program Files (x86)\MSMQ Inspector\ViridisSoftware.MsmqInspector.GUI.Core.dll
+    1>         12 file(s) copied.
+    1>  MSMQ.ReportGenerator.PlugIn -> msmq-inspector-contrib\src\MSMQ.ReportGenerator.PlugIn\bin\Debug\MSMQ.ReportGenerator.PlugIn.dll
+    ========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
 
 ## Creating the Plug In Loader
 
@@ -58,45 +58,45 @@ These are classes that implement `MsmqInspector.GUI.Core.IPlugIn` interface and 
 
 The interface looks like this but there is a base class (`PluginLoaderBase`) for the boiler plate code:
 
-	namespace MsmqInspector.GUI.Core
-	{
-	  public interface IPlugIn
-	  {
-	    string PluginDescription { get; }
-	
-	    string PluginName { get; }
-	
-	    int RequestedLoadOrder { get; }
-	
-	    void InitializePlugIn();
-	
-	    void LoadPlugIn(IApplicationServices services);
-	
-	    void UnloadPlugIn();
-	  }
-	}
+    namespace MsmqInspector.GUI.Core
+    {
+      public interface IPlugIn
+      {
+        string PluginDescription { get; }
+    
+        string PluginName { get; }
+    
+        int RequestedLoadOrder { get; }
+    
+        void InitializePlugIn();
+    
+        void LoadPlugIn(IApplicationServices services);
+    
+        void UnloadPlugIn();
+      }
+    }
 
 All fairly standard information.
 
 A bare bones loader could look like this:
 
-	using System;
-	using MsmqInspector.GUI.Core;
-	
-	namespace MSMQ.ReportGenerator.PlugIn
-	{
-	    public class ReportGeneratorLoader : PluginLoaderBase, IPlugIn
-	    {
-	        public ReportGeneratorLoader() : 
-	            base("Report Generator", "Generates a report of the contents of all the messages in a queue", 1000)
-	        {
-	        }
-	
-	        public override void InitializePlugIn()
-	        {
-	        }
-	    }
-	}
+    using System;
+    using MsmqInspector.GUI.Core;
+    
+    namespace MSMQ.ReportGenerator.PlugIn
+    {
+        public class ReportGeneratorLoader : PluginLoaderBase, IPlugIn
+        {
+            public ReportGeneratorLoader() : 
+                base("Report Generator", "Generates a report of the contents of all the messages in a queue", 1000)
+            {
+            }
+    
+            public override void InitializePlugIn()
+            {
+            }
+        }
+    }
 
 When the application loads a plug in, a call to `LoadPlugIn(IApplicationServices services)` is made and the services are passed in. 
 The `IApplicationServices` interface is an application shell related item. 
@@ -144,7 +144,7 @@ Once we have this information we can render some sort of report.
 
 To give you an idea of what a command looks like, lets take a look at a simple one, here is a trimmed version of the command that :
 
-	// cut down version of the "Copy Queue Path" command	
+    // cut down version of the "Copy Queue Path" command
     public class QueueInspector : AppCommandBase
     {
         public CopyQueuePathCommand()
@@ -163,10 +163,10 @@ Not too much rocket science going on in there, you can probably guess what is go
 How is this wired up?
 Inside the `loader.InitializePlugIn()` method for this plug-in there is some code to add a menu item to the context menu for the queue inspector (yes, the application uses the same system to load its internal workings).
 
-	...
-	Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
-		CommandControlBuilder.CreateToolStripMenuItem<CopyQueuePathCommand>());
-	...
+    ...
+    Services.HostWindow.QueueInspector.QueueMenu.Items.Add(
+        CommandControlBuilder.CreateToolStripMenuItem<CopyQueuePathCommand>());
+    ...
 
 This displays a menu item that when clicked, executes the code above.
 
@@ -350,8 +350,8 @@ How does this all look?
         bytes = new byte[length];
         sr.BaseStream.Read(bytes, 0, length);
     }
-	
-	// Use the Render Service to change the message bytes into a string:
+    
+    // Use the Render Service to change the message bytes into a string:
     var msg = messageBodyRenderService.Render(bytes, preferredDeserialiser, null);
 
     // For now lets just report the Count:
@@ -377,22 +377,24 @@ From here we are only a few lines of code away from rendering every message in t
 
 ## Create a basic text editor window with the report
 
-Seeing as the windows message box is going to be a pretty bad user experience, lets push the information into a better container - we can for example make use of one of the built in text editors.
+Seeing as the windows message box is going to be a pretty bad user experience, lets push the information into a better container - we can for example make use of one of the built in text editor windows.
+Why a text editor? If we use this then we get the file management for free. 
+You could if you wanted generate a HTML report and use a HTML Editor, or even a simple web browser container.
 
-Add the following package - this is required for the references:
+Add the following package - we use **DockPanelSuite** an excellent open source windows forms docking library (this is required for the references):
 
     PM> Install-Package DockPanelSuite -Version 2.9.0.0 -ProjectName MSMQ.ReportGenerator.PlugIn
 
 Next, remove the "Services.HostWindow.DisplayMessageBox" code to create an editor and set the contents to the "report" (still just one message for now):
 
-	// Get an instance of basic text editor:
-	var editor = Services.Resolve<IEditor>("txt-editor");
+    // Get an instance of basic text editor:
+    var editor = Services.Resolve<IEditor>("txt-editor");
 
-	// Set "all the text" of the editor window the the generated report:
-	editor.AllText = msg;
+    // Set "all the text" of the editor window the the generated report:
+    editor.AllText = msg;
 
-	// This command displays the editor window in the application:
-	HostWindow.DisplayDockedForm(editor as DockContent);
+    // This command displays the editor window in the application:
+    HostWindow.DisplayDockedForm(editor as DockContent);
 
 Now if we execute the command a new editor form is created with the contents as the first massage of the queue.
 
@@ -400,3 +402,94 @@ Now if we execute the command a new editor form is created with the contents as 
 
 ## Get all the messages
 
+OK, this part is pretty simple, we just need to iterate the `Result` list in the list command. 
+Lets refactor the report command a little:
+
+    // Get an instance of the rendering service:
+    var messageBodyRenderService = Services.Resolve<IMessageBodyRenderService>();
+
+    // Store up the report:
+    var sb = new StringBuilder();
+
+    // Some basic report details:
+    sb.Append("Server: ");
+    sb.AppendLine(queueInspector.MessageQueueContext.MachineName);
+    sb.Append("Queue:  ");
+    sb.AppendLine(queueInspector.MessageQueueContext.QueueName);
+    sb.Append("Count:  ");
+    sb.AppendLine(listCommand.Result.Count.ToString());
+    sb.AppendLine();
+    sb.AppendLine("---");
+    sb.AppendLine();
+
+    // Grab the first message - render the contents
+    foreach (Message message in listCommand.Result)
+    {
+        // We need the message data in byte format, convert the stream to bytes:
+        byte[] bytes;
+        using (var sr = new StreamReader(message.BodyStream, true))
+        {
+            var length = (int) sr.BaseStream.Length;
+            bytes = new byte[length];
+            sr.BaseStream.Read(bytes, 0, length);
+        }
+
+        // Use the Render Service to change the message bytes into a string:
+        var msg = messageBodyRenderService.Render(bytes, preferredDeserialiser, null);
+
+        sb.Append("Arrived Time: ");
+        sb.AppendLine(message.ArrivedTime.ToString("u"));
+        sb.AppendLine("Message Body:");
+        sb.AppendLine();
+        sb.AppendLine(msg);
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+    }
+
+    // Get an instance of basic text editor:
+    var editor = Services.Resolve<IEditor>("txt-editor");
+
+    // Set "all the text" of the editor window the the generated report:
+    editor.AllText = sb.ToString();
+
+    // This displays the editor window in the application:
+    HostWindow.DisplayDockedForm(editor as DockContent);
+
+All pretty straight forward. The output is basic but here we have a report of all the massages in the queue. 
+
+Here is an example of the output:
+
+    Server: DEVBOX
+    Queue:  private$\wcfqueue
+    Count:  2
+
+    ---
+
+    Arrived Time: 2015-04-07 07:15:48Z
+    Message Body:
+
+    <SubmitMessage xmlns="urn:viridissoftware.com.au/wcfSample">
+      <request>adf2bd85-06fb-46cc-b2d3-8b9d39e47c85</request>
+      <action>9</action>
+      <ts>635639517472107098</ts>
+    </SubmitMessage>
+
+    ---
+
+    Arrived Time: 2015-04-07 07:54:14Z
+    Message Body:
+
+    <SubmitMessage xmlns="urn:viridissoftware.com.au/wcfSample">
+      <request>3cc19b28-1d1d-4d0e-81c6-45d93b257911</request>
+      <action>3</action>
+      <ts>635639540545442024</ts>
+    </SubmitMessage>
+
+    ---
+
+## Next Steps
+
+Obviously there is a lot we can do to this command to make it more readable, fault tolerant etc but for the purposes of this tutorial we will just keep it in one method.
+
+A few notes about distributing this plug-in...
