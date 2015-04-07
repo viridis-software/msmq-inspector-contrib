@@ -375,4 +375,28 @@ If you have a WCF message try executing the report with the setting on and off.
 
 From here we are only a few lines of code away from rendering every message in the queue.
 
- 
+## Create a basic text editor window with the report
+
+Seeing as the windows message box is going to be a pretty bad user experience, lets push the information into a better container - we can for example make use of one of the built in text editors.
+
+Add the following package - this is required for the references:
+
+    PM> Install-Package DockPanelSuite -Version 2.9.0.0 -ProjectName MSMQ.ReportGenerator.PlugIn
+
+Next, remove the "Services.HostWindow.DisplayMessageBox" code to create an editor and set the contents to the "report" (still just one message for now):
+
+	// Get an instance of basic text editor:
+	var editor = Services.Resolve<IEditor>("txt-editor");
+
+	// Set "all the text" of the editor window the the generated report:
+	editor.AllText = msg;
+
+	// This command displays the editor window in the application:
+	HostWindow.DisplayDockedForm(editor as DockContent);
+
+Now if we execute the command a new editor form is created with the contents as the first massage of the queue.
+
+![A basic text editor displaying the "report"](basic-editor.png)
+
+## Get all the messages
+

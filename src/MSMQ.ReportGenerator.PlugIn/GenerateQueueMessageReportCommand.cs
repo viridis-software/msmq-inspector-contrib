@@ -7,6 +7,7 @@ using MsmqInspector.GUI.Core;
 using MsmqInspector.GUI.Core.Commands;
 using MsmqInspector.GUI.Core.Services;
 using Message = System.Messaging.Message;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace MSMQ.ReportGenerator.PlugIn
 {
@@ -62,17 +63,14 @@ namespace MSMQ.ReportGenerator.PlugIn
             // Use the Render Service to change the message bytes into a string:
             var msg = messageBodyRenderService.Render(bytes, preferredDeserialiser, null);
 
-            // For now lets just report the Count:
-            Services.HostWindow.DisplayMessageBox(
-                null /* not relevant */,
-                msg /* message text */,
-                "queue report command" /* caption */,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information,
-                MessageBoxDefaultButton.Button1,
-                MessageBoxOptions.DefaultDesktopOnly,
-                null,
-                null);
+            // Get an instance of basic text editor:
+            var editor = Services.Resolve<IEditor>("txt-editor");
+
+            // Set "all the text" of the editor window the the generated report:
+            editor.AllText = msg;
+
+            // This command displays the editor window in the application:
+            HostWindow.DisplayDockedForm(editor as DockContent);
         }
     }
 }
