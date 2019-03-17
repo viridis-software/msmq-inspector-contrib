@@ -2,7 +2,7 @@
 
 Example code for extending the behaviour of MSMQ Inspector.
 
-We do make the bold assumption that you have a copy of the software installed (version of at least 1.2.0.77) - see [http://viridissoftware.com.au/Products/MSMQManager/](http://viridissoftware.com.au/Products/MSMQManager/) and have MSMQ configured on the development machine.
+We do make the bold assumption that you have a copy of the software installed (version of at least 1.2.0.77) - see [https://viridissoftware.com/Products/MSMQInspector/](https://viridissoftware.com/Products/MSMQInspector/) and have MSMQ configured on the development machine.
 
 Plugin use is restricted to the Premium licensed users.
 
@@ -39,5 +39,6 @@ A binding redirect is used to ensure that plug-ins build against an older assemb
 Help!
 -----
 
-If you have a particular scenario you would like to implement please [Contact Us](http://viridissoftware.com.au/Home/Contact) with some details. 
+If you have a particular scenario you would like to implement, please [Contact Us](https://viridissoftware.com/Home/Contact) with some details. 
+
 There may be existing pieces you can plug together or a simple kick-start on where to look.
